@@ -30,7 +30,7 @@ func hexString(src []byte) string {
 	return result
 }
 
-// go test -timeout 30s github.com/molon/sbot/zip -run \^\(TestWriter\)\$ -v
+// go test -timeout 30s github.com/molon/zlib -run \^\(TestWriter\)\$ -v
 func TestWriter(t *testing.T) {
 	src := []byte("God is a girl")
 
@@ -60,6 +60,7 @@ func TestWriter(t *testing.T) {
 	if err != nil {
 		t.Errorf("NewReader failed: %v", err)
 	}
+	defer rd.Close()
 
 	uncompressed := bytes.NewBuffer(nil)
 	_, err = io.Copy(uncompressed, rd)
