@@ -1,2 +1,36 @@
 # zlib
-zlib cgo wrapper
+官方flate库支持的特性极少，所以用cgo的方式wrapper了一个，代码基本是参考自github.com/youtube/vitess/go/cgzip，但是修改为并不仅仅是支持gzip。
+
+Changed from
+  github.com/youtube/vitess/go/cgzip
+but without the rest of the repo.
+
+I (nsd) tested several alternatives to encoding/flate
+for speed on arm32 cortex-A9 cores and compression
+of redundant JSON blobs like our current day AP stats
+and found cgzip was not only the fastest but the best
+compressor too.
+
+ pkg  : time            relative to baseline                 compressed size     compression ratio
+flate : 18.926959ms  =  0.9999999887711191  x faster ;  ratio 2682 / 12011 = 22.32953126300891 %
+cgzip : 2.235148ms  =  8.467877277696212  x faster ;    ratio 2258 / 12011 = 18.799433852302055 % <------ :-)
+klaus : 8.709794ms  =  2.173066134955322  x faster ;    ratio 2831 / 12011 = 23.57006077762051 %
+lz4 : 11.124966ms  =  1.7013048063651215  x faster ;    ratio 3720 / 12011 = 30.97160935808842 %
+lzo : 2.243274ms  =  8.437203411260768  x faster ;      ratio 3574 / 12011 = 29.756056947797855 %
+snappy : 2.462661ms  =  7.685570902327792  x faster ;   ratio 3668 / 12011 = 30.538672883190408 %
+
+However cgzip is part of a much larger repo of stuff from youtube, so
+I extracted just the cgzip bit, and the LICENSE file, and made this
+repo.
+
+------------------------------------
+
+Specific versions benchmarked above:
+
+flate: go 1.5.2
+github.com/bkaradzic/go-lz4		74ddf82598bc4745b965729e9c6a463bedd33049
+github.com/cyberdelia/lzo		82ca2a37bbe6fbe4b616e66e8cbd4ababd5b892d
+github.com/golang/snappy		723cc1e459b8eea2dea4583200fd60757d40097a
+github.com/klauspost/compress/flate	112706bf3743c241303219f9c5ce2e6635f69221
+github.com/youtube/vitess/go/cgzip	460b632f05bc4c824471e0d9635e611cad788bbf
+
