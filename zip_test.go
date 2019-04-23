@@ -43,14 +43,9 @@ func TestWriter(t *testing.T) {
 	if _, err := z.Write(src); err != nil {
 		t.Errorf("Write failed: %v", err)
 	}
-	// If you dont want to use Z_SYNC_FLUSH, ignore this
-	// if err := z.Flush(); err != nil {
-	// 	t.Errorf("Flush failed: %v", err)
-	// }
-	if err := z.Close(); err != nil {
-		t.Errorf("Close failed: %v", err)
+	if err := z.Flush(); err != nil {
+		t.Errorf("Flush failed: %v", err)
 	}
-
 	bts := out.Bytes()
 
 	log.Println(hexString(bts))

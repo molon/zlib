@@ -90,21 +90,48 @@ func (z *Writer) Flush() error {
 	if z.err != nil {
 		return z.err
 	}
-	z.write(nil, Z_SYNC_FLUSH)
-	return z.err
-}
 
-// Calling Close does not close the wrapped io.Writer originally
-// passed to NewWriterX.
-func (z *Writer) Close() error {
-	if z.err != nil {
-		return z.err
-	}
 	z.write(nil, Z_FINISH)
 	if z.err != nil {
 		return z.err
 	}
 	z.strm.deflateEnd()
+	if z.err != nil {
+		return z.err
+	}
+
+	// Only can flush once
 	z.err = io.EOF
 	return nil
 }
+
+func (z *Writer) Close() error {
+	if z.err == io.EOF {
+		return nil
+	}
+
+	return z.Flush()
+}
+
+// func (z *Writer) Flush() error {
+// 	if z.err != nil {
+// 		return z.err
+// 	}
+// 	z.write(nil, Z_SYNC_FLUSH)
+// 	return z.err
+// }
+
+// // Calling Close does not close the wrapped io.Writer originally
+// // passed to NewWriterX.
+// func (z *Writer) Close() error {
+// 	if z.err != nil {
+// 		return z.err
+// 	}
+// 	z.write(nil, Z_FINISH)
+// 	if z.err != nil {
+// 		return z.err
+// 	}
+// 	z.strm.deflateEnd()
+// 	z.err = io.EOF
+// 	return nil
+// }
